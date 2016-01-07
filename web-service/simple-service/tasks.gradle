@@ -1,0 +1,14 @@
+task copyConfiguration << {
+
+    println ''
+    println '*** Running this task locally overwrites important files in your source code'
+    println ''
+    println "    Target Configuration environment: $environment"
+    println ''
+
+    copy {
+        from "src/main/environment/$environment/META-INF"
+        into "src/main/webapp/META-INF"
+        include "*/"
+    }
+}

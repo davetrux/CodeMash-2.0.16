@@ -1,0 +1,1 @@
+calabash-android run ../app/build/outputs/apk/app-debug.apk --format html --out calabash_report.html

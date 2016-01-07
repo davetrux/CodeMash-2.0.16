@@ -1,0 +1,48 @@
+plugins {
+  id "org.openbakery.xcode-plugin" version "0.12.5"
+}
+
+def minorVersion = System.getenv("BUILD_NUMBER") as Integer ?: 999
+def appVersion = "1.0." + minorVersion as String
+
+def environment = 'Debug';
+
+if (System.properties['DEPLOY_ENVIRONMENT'] != null) {
+	environment = System.properties['DEPLOY_ENVIRONMENT'].toString()
+}
+
+def schemeSuffix = ''
+
+if (environment != 'Debug') {
+	schemeSuffix = '-' + environment.toLowerCase()
+}
+
+def currentPath = file('.')
+
+   
+xcodebuild {
+  scheme = 'simpleconsumer' + schemeSuffix
+  target = 'simpleconsumer'
+  configuration = environment
+  simulator = false
+  ipaFileName = 'SimpleConsumer-' + environment + '-' + appVersion
+  
+  signing {
+	mobileProvisionURI = 'file://' + currentPath + '/USPS_Developer_Conference_Demo.mobileprovision'
+	certificateURI = 'file://' + currentPath + '/DevCert.p12'
+	certificatePassword = cert_password
+	}
+}
+
+infoplist {
+	version = '1'
+	shortVersionString = appVersion
+}
+
+hockeyapp {
+	apiToken = hockeyapp_token
+	appID = hockeyapp_appid
+	notes =  environment + ' build generated automatically'
+}
+
+tasks.hockeyapp.mustRunAfter tasks.package

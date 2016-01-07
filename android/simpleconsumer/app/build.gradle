@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+apply plugin: 'devicefarm'
+apply plugin: 'de.felixschulze.gradle.hockeyapp'
+
+def isQaBuild = System.properties['DEPLOY_ENVIRONMENT'] as String ?: "development"
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+    defaultConfig {
+        applicationId "com.hpe.simpleconsumer"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode System.getenv("BUILD_NUMBER") as Integer ?: 0
+        versionName "2.0." + System.getenv("BUILD_NUMBER") as String ?: "0-D"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("key_store.jks")
+            storePassword "v6RTia5@xZtR"
+            keyAlias "devday"
+            keyPassword "v6RTia5@xZtR"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+        qa {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            debuggable false
+        }
+    }
+
+    testBuildType "qa"
+}
+
+hockeyapp {
+    apiToken = "TOKEN"
+    releaseType = 1 // alpha
+    notify = 0
+    status = 2
+}
+
+task zipFeatures(type:Zip) {
+
+        archiveName 'features.zip'
+        from('../calabash/features')
+        include '**/*'
+        into 'features'
+        destinationDir file('../calabash/devicefarm')
+
+}
+
+tasks.zipFeatures.onlyIf { isQaBuild == "qa" }
+
+devicefarm {
+    projectName "Simple Consumer" // required: Must already exist.
+
+    devicePool "Test Devices"
+
+    authentication {
+        accessKey "accessKey"
+        secretKey "secretKey"
+    }
+
+    calabash {
+        tests file('../calabash/devicefarm/features.zip')
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.squareup.retrofit:retrofit:1.7.1'
+}

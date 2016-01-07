@@ -1,0 +1,65 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.amazonaws:aws-devicefarm-gradle-plugin:1.2'
+        classpath 'de.felixschulze.gradle:gradle-hockeyapp-plugin:3.4'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+def buildType = System.properties['DEPLOY_ENVIRONMENT'] as String ?: "development"
+
+
+task buildVariant(type: GradleBuild) {
+
+    doFirst {
+
+        println '==========================================================='
+        println '==========================================================='
+        println 'Build Environment: ' + buildType
+        println '==========================================================='
+        println '==========================================================='
+
+
+        switch (buildType) {
+            case "development":
+                tasks = [
+                         ':app:testDebug',
+                         ':app:lintDebug',
+                         ':app:assembleDebug'
+                ]
+                println 'Running dev tasks: ' + tasks
+                break
+            case "qa":
+                tasks = [
+                        ':app:assembleQa',
+                        ':app:lintQa',
+                        ':app:devicefarmUpload',
+                        ':app:uploadQaToHockeyApp']
+                println 'Running qa tasks: ' + tasks
+                break
+            case "release":
+                tasks = [
+                        ':app:assembleRelease']
+                println 'Running release tasks: ' + tasks
+                break
+            default:
+                tasks = [
+                        ':app:testDebug',
+                        ':app:lintDebug',
+                        ':app:assembleDebug']
+                println 'Running default tasks: ' + tasks
+                break
+        }
+    }
+}

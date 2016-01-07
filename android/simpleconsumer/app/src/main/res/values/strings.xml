@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SimpleConsumer</string>
+    <string name="login">Get Data</string>
+</resources>

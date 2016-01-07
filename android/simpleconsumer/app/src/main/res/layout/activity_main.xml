@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="*"
+    android:id="@+id/login_layout">
+    <TableRow>
+        <TextView
+            style="@style/TypeTitle"
+            android:id="@+id/title"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <Button
+            style="@style/TypeButton"
+            android:text="@string/login"
+            android:id="@+id/login"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <TextView
+            android:layout_marginLeft="20dp"
+            android:id="@+id/resultsLabel"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/results"
+            android:layout_marginLeft="20dp"
+            android:layout_span="2"/>
+    </TableRow>
+</TableLayout>
